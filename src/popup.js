@@ -17,10 +17,7 @@ byId('renew').addEventListener('click', async () => {
   for (const tab of await browser.tabs.query({ url: 'https://github.com/*', discarded: false })) {
     // A tab that has no content script yet rejects the message.
     const handled = await browser.tabs.sendMessage(tab.id, { type: 'renew-now' }).catch(() => false);
-    if (handled) {
-      window.close();
-      return;
-    }
+    if (handled) return;
   }
   byId('note').textContent = 'Open or reload a GitHub tab first.';
 });
@@ -31,7 +28,7 @@ byId('copy-log').addEventListener('click', async () => {
   const text = [`GitHub SSO Keeper ${browser.runtime.getManifest().version}`, view?.headline ?? 'No data yet', ...(view?.details ?? []), '', ...lines].join('\n');
   const copied = await navigator.clipboard.writeText(text).then(() => true, () => false);
   byId('copy-log').classList.toggle('done', copied);
-  byId('note').textContent = copied ? 'Event log copied.' : 'Could not copy the event log.';
+  if (!copied) byId('note').textContent = 'Could not copy the event log.';
   setTimeout(() => {
     byId('copy-log').classList.remove('done');
     byId('note').textContent = '';

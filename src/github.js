@@ -11,7 +11,7 @@ const RENEW_BEFORE_EXPIRY_S = 5 * 60;
 const GRACE_AFTER_EXPIRY_S = 10 * 60;
 const ACTIVE_WITHIN_MS = 45 * 60 * 1000;
 const RENEWAL_TIMEOUT_MS = 45 * 1000;
-const MANUAL_RENEWAL_TIMEOUT_MS = 120 * 1000;
+const FOREGROUND_RENEWAL_TIMEOUT_MS = 120 * 1000;
 const RETRY_AFTER_FAILURE_MS = 3 * 60 * 1000;
 const MODAL_COOLDOWN_MS = 5 * 1000;
 const PROMPT_LOCK_MS = 30 * 1000;
@@ -102,13 +102,13 @@ function fail(reason) {
 function describeTimeout(startedAt, opened) {
   if (!opened) return 'another SSO flow held the lock the whole time';
   const last = shared.get('log', []).findLast(([time, id]) => time >= startedAt && id !== INSTANCE_ID);
-  return last ? `timed out after "${last[3]}" on ${last[2]}; Microsoft may be waiting for a sign-in, use Renew now in the popup to see it` : 'timed out, the renewal tab never reported back';
+  return last ? `timed out after "${last[3]}" on ${last[2]}; Microsoft may be waiting for a sign-in` : 'timed out, the renewal tab never reported back';
 }
 
 // The identity provider needs a real navigation and GitHub pages cannot be framed.
 // So a background tab submits the SSO form of the tiny page /sso_modal, and the landing page /sso_complete proves the renewal.
 async function renewSession({ foreground = false } = {}) {
-  const timeout = foreground ? MANUAL_RENEWAL_TIMEOUT_MS : RENEWAL_TIMEOUT_MS;
+  const timeout = foreground ? FOREGROUND_RENEWAL_TIMEOUT_MS : RENEWAL_TIMEOUT_MS;
   const owner = `${INSTANCE_ID}:renewal`;
   const startedAt = Date.now();
   let tab = null;
@@ -254,7 +254,7 @@ browser.runtime.onMessage.addListener((message) => {
   if (message.type === 'renewal-failed') {
     shared.set('renewal-result', { time: Date.now(), expires: 0, error: message.reason });
   } else if (message.type === 'renew-now') {
-    exclusively(() => renewSession({ foreground: true }));
+    exclusively(() => renewSession());
     return Promise.resolve(true);
   }
   return undefined;
