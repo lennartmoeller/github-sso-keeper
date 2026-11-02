@@ -1,0 +1,46 @@
+body {
+  width: 320px;
+  margin: 12px;
+  font: 13px system-ui, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+#dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 3px;
+  border-radius: 50%;
+}
+
+#details {
+  margin: 0;
+}
+
+#details,
+#log {
+  white-space: pre-line;
+}
+
+#log {
+  max-height: 160px;
+  overflow: auto;
+  font-size: 11px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+}
