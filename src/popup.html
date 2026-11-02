@@ -7,18 +7,33 @@
 </head>
 <body>
   <header>
-    <span id="dot"></span>
-    <p id="details"></p>
+    <img src="icon.svg" alt="" width="22" height="22">
+    <h1>GitHub SSO Keeper</h1>
+    <button id="renew" class="icon-button primary" type="button" title="Renew now" aria-label="Renew now">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3M18 3v4h-4M6 21v-4h4"/>
+      </svg>
+    </button>
+    <button id="copy-log" class="icon-button" type="button" title="Copy event log" aria-label="Copy event log">
+      <svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="8" y="8" width="12" height="12" rx="2"/>
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>
+      </svg>
+      <svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m5 12.5 4.5 4.5L19 7.5"/>
+      </svg>
+    </button>
   </header>
-  <button id="renew" type="button">Renew now</button>
+  <section id="status">
+    <p id="headline"></p>
+    <p id="details"></p>
+  </section>
+  <section id="account-setting">
+    <label for="account">Microsoft account</label>
+    <input id="account" type="text" placeholder="name@company.com" spellcheck="false" autocomplete="off">
+    <p id="account-hint"></p>
+  </section>
   <p id="note" role="status"></p>
-  <label for="account">Microsoft account</label>
-  <input id="account" type="text" placeholder="name@company.com" spellcheck="false" autocomplete="off">
-  <p id="account-hint"></p>
-  <details>
-    <summary>Event log</summary>
-    <pre id="log"></pre>
-  </details>
   <script src="popup.js"></script>
 </body>
 </html>

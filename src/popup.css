@@ -1,45 +1,121 @@
 :root {
   color-scheme: light dark;
+  --accent: #8250df;
+  --state: #6e7781;
+  --border: color-mix(in srgb, CanvasText 14%, transparent);
 }
 
 body {
-  width: 320px;
-  margin: 12px;
-  font: 13px system-ui, sans-serif;
-}
-
-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-#dot {
-  flex: none;
-  width: 10px;
-  height: 10px;
-  margin-top: 3px;
-  border-radius: 50%;
+  width: 360px;
+  margin: 0;
+  font: 13px/1.4 system-ui, sans-serif;
 }
 
 p {
   margin: 0;
 }
 
-#details,
-#log {
-  white-space: pre-line;
+header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px 10px 14px;
+  border-bottom: 1px solid var(--border);
 }
 
-button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 6px;
+header img {
+  margin-right: 6px;
+}
+
+h1 {
+  margin: 0 auto 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: color-mix(in srgb, CanvasText 10%, transparent);
+}
+
+.icon-button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.icon-button.primary:hover {
+  background: color-mix(in srgb, var(--accent) 85%, black);
+}
+
+.icon-button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-done,
+.done .icon-copy {
+  display: none;
+}
+
+.done .icon-done {
+  display: block;
+}
+
+#status {
+  margin: 14px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--state);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--state) 14%, Canvas);
+}
+
+#headline {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+#details {
+  margin-top: 6px;
+  white-space: pre-line;
+  opacity: 0.85;
+}
+
+#note:not(:empty) {
+  margin: -6px 14px 14px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+#account-setting {
+  padding: 0 14px 14px;
 }
 
 label {
   display: block;
-  margin-top: 16px;
   font-weight: 600;
 }
 
@@ -48,28 +124,19 @@ input {
   width: 100%;
   box-sizing: border-box;
   margin: 4px 0;
-  padding: 4px 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: Field;
+  color: FieldText;
 }
 
-#note,
 #account-hint {
-  margin-top: 4px;
   font-size: 12px;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 #account-hint.warning {
-  color: #9a6700;
+  color: light-dark(#9a6700, #d4a72c);
   opacity: 1;
-}
-
-details {
-  margin-top: 16px;
-}
-
-#log {
-  max-height: 160px;
-  margin: 6px 0 0;
-  overflow: auto;
-  font-size: 11px;
 }

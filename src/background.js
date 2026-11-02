@@ -10,12 +10,16 @@ async function renderAction() {
   const secondsLeft = status.endsAt - Math.floor(Date.now() / 1000);
   const expired = secondsLeft <= 0;
   const minutes = Math.floor(secondsLeft / 60);
+  const view = {
+    color: COLORS[expired ? 'expired' : status.state],
+    headline: expired ? 'Session expired' : `${minutes} min left`,
+    details: expired ? [EXPIRED_DETAIL] : status.details,
+  };
   await Promise.all([
     browser.action.setBadgeText({ text: expired ? '!' : String(minutes) }),
-    browser.action.setBadgeBackgroundColor({ color: COLORS[expired ? 'expired' : status.state] }),
-    browser.action.setTitle({
-      title: [`GitHub SSO Keeper: ${expired ? 'session expired' : `${minutes} min left`}`, ...(expired ? [EXPIRED_DETAIL] : status.details)].join('\n'),
-    }),
+    browser.action.setBadgeBackgroundColor({ color: view.color }),
+    browser.action.setTitle({ title: [`GitHub SSO Keeper: ${view.headline}`, ...view.details].join('\n') }),
+    browser.storage.local.set({ view }),
   ]);
 }
 

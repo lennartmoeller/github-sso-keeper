@@ -1,14 +1,10 @@
 const byId = (id) => document.getElementById(id);
+const NOTE_MS = 1500;
 
-async function renderStatus() {
-  const { status } = await browser.storage.local.get('status');
-  const [[red, green, blue], title] = await Promise.all([browser.action.getBadgeBackgroundColor({}), browser.action.getTitle({})]);
-  byId('dot').style.background = status ? `rgb(${red}, ${green}, ${blue})` : 'gray';
-  byId('details').textContent = status ? title : 'No data yet. Open a GitHub tab.';
-  byId('log').textContent = [...(status?.log ?? [])]
-    .reverse()
-    .map(([time, id, path, message]) => `${new Date(time).toLocaleTimeString()} [${id}] ${path} | ${message}`)
-    .join('\n');
+function render(view = { color: '#6e7781', headline: 'No data yet', details: ['Open a GitHub tab.'] }) {
+  document.documentElement.style.setProperty('--state', view.color);
+  byId('headline').textContent = view.headline;
+  byId('details').textContent = view.details.join('\n');
 }
 
 function renderAccountHint() {
@@ -29,15 +25,28 @@ byId('renew').addEventListener('click', async () => {
   byId('note').textContent = 'Open or reload a GitHub tab first.';
 });
 
+byId('copy-log').addEventListener('click', async () => {
+  const { status, view } = await browser.storage.local.get(['status', 'view']);
+  const lines = (status?.log ?? []).map(([time, id, path, message]) => `${new Date(time).toLocaleTimeString()} [${id}] ${path} | ${message}`);
+  const text = [`GitHub SSO Keeper ${browser.runtime.getManifest().version}`, view?.headline ?? 'No data yet', ...(view?.details ?? []), '', ...lines].join('\n');
+  const copied = await navigator.clipboard.writeText(text).then(() => true, () => false);
+  byId('copy-log').classList.toggle('done', copied);
+  byId('note').textContent = copied ? 'Event log copied.' : 'Could not copy the event log.';
+  setTimeout(() => {
+    byId('copy-log').classList.remove('done');
+    byId('note').textContent = '';
+  }, NOTE_MS);
+});
+
 byId('account').addEventListener('input', (event) => {
   browser.storage.local.set({ account: event.target.value.trim() });
   renderAccountHint();
 });
 browser.storage.onChanged.addListener((changes) => {
-  if (changes.status) renderStatus();
+  if (changes.view) render(changes.view.newValue);
 });
-browser.storage.local.get('account').then(({ account }) => {
+browser.storage.local.get(['view', 'account']).then(({ view, account }) => {
+  render(view);
   byId('account').value = account ?? '';
   renderAccountHint();
 });
-renderStatus();

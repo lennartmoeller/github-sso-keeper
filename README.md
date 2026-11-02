@@ -15,8 +15,8 @@ Unofficial Firefox extension for GitHub Enterprise Cloud with OIDC single sign-o
 The icon's badge shows the minutes until the session ends, on every tab.
 Its color is green when auto-renewal is healthy, blue while renewing, yellow when paused or the last renewal failed, and red with an exclamation mark when the session expired.
 Hover it for details, including the reason of a failed renewal.
-Click it to open the popup with the status, a *Renew now* button, the Microsoft account setting and the event log.
-*Renew now* renews right away in a visible tab.
+Click it to open the popup with the status, the Microsoft account setting and two icon buttons.
+The circular arrows renew right away in a visible tab, and the clipboard copies the event log for a bug report.
 
 ## Install
 
