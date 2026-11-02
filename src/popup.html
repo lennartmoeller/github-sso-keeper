@@ -11,11 +11,10 @@
     <p id="details"></p>
   </header>
   <button id="renew" type="button">Renew now</button>
-  <p id="note"></p>
-  <label>
-    Microsoft account
-    <input id="account" type="text" placeholder="name@company.com" spellcheck="false">
-  </label>
+  <p id="note" role="status"></p>
+  <label for="account">Microsoft account</label>
+  <input id="account" type="text" placeholder="name@company.com" spellcheck="false" autocomplete="off">
+  <p id="account-hint"></p>
   <details>
     <summary>Event log</summary>
     <pre id="log"></pre>

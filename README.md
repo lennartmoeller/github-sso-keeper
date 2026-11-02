@@ -22,7 +22,7 @@ Click it to open the popup with the status, a *Renew now* button, the Microsoft 
 
 Firefox 140 or newer is required.
 Release Firefox loads unsigned extensions only temporarily: open `about:debugging#/runtime/this-firefox`, choose *Load Temporary Add-on* and pick `src/manifest.json`.
-For a permanent install, run `npm run build`, sign the result with `npx web-ext sign --channel=unlisted` and open the signed `.xpi`.
+The temporary add-on disappears when Firefox restarts, so [sign it](./CONTRIBUTING.md#sign-the-extension) for a permanent install.
 Allow access to `github.com` and Microsoft's login page when Firefox asks.
 
 ## Choose the Microsoft account
@@ -30,6 +30,13 @@ Allow access to `github.com` and Microsoft's login page when Firefox asks.
 If several accounts are signed in, Microsoft shows "Pick an account" and waits for a click.
 Enter your sign-in name from that page, for example `name@company.com`, in the *Microsoft account* field of the popup.
 The extension clicks that account from then on.
+Without a matching account, a background renewal fails within seconds and the popup states the reason.
+
+## Limits
+
+Renewal needs an open GitHub tab, because the extension runs from it.
+It pauses when you have not used GitHub for 45 minutes and resumes with your next activity.
+After a longer break, the next GitHub page shows the SSO prompt once, which the extension continues.
 
 ## How it works
 

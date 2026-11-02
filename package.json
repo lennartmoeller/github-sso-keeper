@@ -5,7 +5,8 @@
   "scripts": {
     "check": "eslint && web-ext lint",
     "start": "web-ext run",
-    "build": "web-ext build"
+    "build": "web-ext build",
+    "sign": "web-ext sign --channel=unlisted"
   },
   "webExt": {
     "sourceDir": "src"

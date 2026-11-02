@@ -102,7 +102,7 @@ function fail(reason) {
 function describeTimeout(startedAt, opened) {
   if (!opened) return 'another SSO flow held the lock the whole time';
   const last = shared.get('log', []).findLast(([time, id]) => time >= startedAt && id !== INSTANCE_ID);
-  return last ? `timed out after "${last[3]}" on ${last[2]}; if Microsoft asks for an account, set it in the extension popup` : 'timed out, the renewal tab never reported back';
+  return last ? `timed out after "${last[3]}" on ${last[2]}; Microsoft may be waiting for a sign-in, use Renew now in the popup to see it` : 'timed out, the renewal tab never reported back';
 }
 
 // The identity provider needs a real navigation and GitHub pages cannot be framed.
@@ -136,12 +136,14 @@ async function renewSession({ foreground = false } = {}) {
 
 function renewProactively() {
   const { expires } = knownSession();
-  if (busy || !expires || nowSeconds() < expires - RENEW_BEFORE_EXPIRY_S) return;
+  if (busy || !navigator.onLine || !expires || nowSeconds() < expires - RENEW_BEFORE_EXPIRY_S) return;
   if (Date.now() - shared.get('activity', 0) > ACTIVE_WITHIN_MS) return;
   if (Date.now() < shared.get('retry-at', 0) || lockedByOther(`${INSTANCE_ID}:renewal`)) return;
   log('session expires soon, renewing it in a background tab');
   return exclusively(() => renewSession());
 }
+
+window.addEventListener('online', () => shared.set('retry-at', 0));
 
 if (location.hash === RENEWAL_HASH) tabState.set('renewal-tab', true);
 const isRenewalTab = () => tabState.get('renewal-tab', false);
@@ -248,9 +250,14 @@ function publishStatus() {
 }
 
 browser.runtime.onMessage.addListener((message) => {
-  if (message.type !== 'renew-now' || isRenewalTab()) return undefined;
-  exclusively(() => renewSession({ foreground: true }));
-  return Promise.resolve(true);
+  if (isRenewalTab()) return undefined;
+  if (message.type === 'renewal-failed') {
+    shared.set('renewal-result', { time: Date.now(), expires: 0, error: message.reason });
+  } else if (message.type === 'renew-now') {
+    exclusively(() => renewSession({ foreground: true }));
+    return Promise.resolve(true);
+  }
+  return undefined;
 });
 
 function check() {

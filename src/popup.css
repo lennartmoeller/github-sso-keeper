@@ -1,3 +1,7 @@
+:root {
+  color-scheme: light dark;
+}
+
 body {
   width: 320px;
   margin: 12px;
@@ -18,7 +22,7 @@ header {
   border-radius: 50%;
 }
 
-#details {
+p {
   margin: 0;
 }
 
@@ -27,20 +31,45 @@ header {
   white-space: pre-line;
 }
 
-#log {
-  max-height: 160px;
-  overflow: auto;
-  font-size: 11px;
+button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 6px;
 }
 
 label {
   display: block;
-  margin-top: 12px;
+  margin-top: 16px;
+  font-weight: 600;
 }
 
 input {
   display: block;
   width: 100%;
   box-sizing: border-box;
+  margin: 4px 0;
+  padding: 4px 6px;
+}
+
+#note,
+#account-hint {
   margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+#account-hint.warning {
+  color: #9a6700;
+  opacity: 1;
+}
+
+details {
+  margin-top: 16px;
+}
+
+#log {
+  max-height: 160px;
+  margin: 6px 0 0;
+  overflow: auto;
+  font-size: 11px;
 }
