@@ -112,7 +112,7 @@ async function renewSession({ foreground = false } = {}) {
   const startedAt = Date.now();
   let tab = null;
   try {
-    while (Date.now() - startedAt < timeout) {
+    for (;;) {
       const result = shared.get('renewal-result');
       if (result?.time >= startedAt) {
         if (result.error) return fail(result.error);
@@ -120,13 +120,14 @@ async function renewSession({ foreground = false } = {}) {
         log('session renewed');
         return result;
       }
+      // Chrome delays the timers of a tab that has been hidden for minutes, so a result may arrive after the deadline and still counts.
+      if (Date.now() - startedAt >= timeout) return fail(describeTimeout(startedAt, tab !== null));
       if (!tab && (await acquireLock(RENEWAL_OWNER, timeout + 15 * 1000))) {
         log(`opening the renewal tab (${foreground ? 'foreground' : 'background'})`);
         tab = openTab(knownSession().modalUrl + RENEWAL_HASH, foreground);
       }
       await sleep(POLL_MS);
     }
-    return fail(describeTimeout(startedAt, tab !== null));
   } finally {
     tab?.close();
     releaseLock(RENEWAL_OWNER);
@@ -214,8 +215,7 @@ async function continueModal(form) {
   const result = (await renewSession()) ?? (await renewSession({ foreground: true }));
   modalCooldownUntil = Date.now() + (result ? MODAL_COOLDOWN_MS : RETRY_AFTER_FAILURE_MS);
   if (!result) return;
-  const page = window.wrappedJSObject;
-  page.external.ssoComplete(cloneInto({ error: null, expiresAround: String(result.expires) }, page));
+  window.postMessage({ source: NAMESPACE, error: null, expiresAround: String(result.expires) }, location.origin);
   form.closest('.sso-modal').querySelector('.sso-prompt-success button[data-close-dialog]').click();
 }
 
@@ -248,15 +248,14 @@ function publishStatus() {
   browser.storage.local.set({ status });
 }
 
-browser.runtime.onMessage.addListener((message) => {
-  if (isRenewalTab()) return undefined;
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (isRenewalTab()) return;
   if (message.type === 'renewal-failed') {
     shared.set('renewal-result', { time: Date.now(), expires: 0, error: message.reason });
   } else if (message.type === 'renew-now') {
     exclusively(() => renewSession());
-    return Promise.resolve(true);
+    sendResponse(true);
   }
-  return undefined;
 });
 
 function check() {

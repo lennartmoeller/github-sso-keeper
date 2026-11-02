@@ -7,7 +7,7 @@ export default [
     files: ['src/**/*.js'],
     languageOptions: {
       sourceType: 'script',
-      globals: { ...globals.browser, ...globals.webextensions, cloneInto: 'readonly' },
+      globals: { ...globals.browser, ...globals.webextensions },
     },
   },
 ];

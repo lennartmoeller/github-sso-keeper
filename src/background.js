@@ -44,7 +44,7 @@ browser.tabs.onRemoved.addListener((tabId) => browser.storage.session.remove(ren
 renderAction();
 
 // Content scripts cannot manage tabs, so they ask for it.
-browser.runtime.onMessage.addListener(async (message, sender) => {
+async function handleMessage(message, sender) {
   switch (message.type) {
     case 'open-tab': {
       const url = new URL(message.url);
@@ -64,4 +64,10 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       return closeRenewalTab(sender.tab.id);
     }
   }
+}
+
+// Chrome ignores a promise returned by a listener, so the answer goes through sendResponse.
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  handleMessage(message, sender).then(sendResponse);
+  return true;
 });
