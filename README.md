@@ -3,7 +3,7 @@
 A browser extension for Firefox, Chrome and Edge that keeps your GitHub Enterprise Cloud SSO session alive, built for Microsoft Entra ID OIDC single sign-on.
 It renews the session in the background and clicks SSO prompts for you, so frequent re-authentication stops interrupting your work.
 
-<img src="./assets/popup.png" alt="The popup showing 43 minutes left, the renewal times and the Microsoft account field" width="360">
+<img src="./assets/popup.png" alt="The active extension icon in the toolbar with open popup.">
 
 ## Features
 
