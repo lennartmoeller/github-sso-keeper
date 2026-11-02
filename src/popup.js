@@ -1,7 +1,7 @@
 const byId = (id) => document.getElementById(id);
 const NOTE_MS = 1500;
 
-const NO_DATA = { headline: 'No data yet', details: ['Open a GitHub tab.'] };
+const NO_DATA = { headline: 'No data yet', details: ['Open or reload a page of your GitHub organization.'] };
 
 function render(view = NO_DATA) {
   document.documentElement.style.setProperty('--state', view.color ?? '');
