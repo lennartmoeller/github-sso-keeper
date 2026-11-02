@@ -25,7 +25,6 @@
     "https://login.microsoftonline.com/*/oauth2/v2.0/authorize*"
   ],
   "action": {
-    "default_title": "GitHub SSO Keeper",
     "default_popup": "popup.html"
   },
   "background": {

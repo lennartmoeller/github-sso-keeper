@@ -49,14 +49,12 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     case 'open-tab': {
       const url = new URL(message.url);
       if (url.origin !== 'https://github.com') throw new Error(`refusing to open ${url.origin}`);
-      const tab = await browser.tabs.create({ url: url.href, active: message.active });
-      await browser.storage.session.set({ [renewalTabKey(tab.id)]: { opener: sender.tab.id, foreground: message.active, openedAt: Date.now() } });
+      const tab = await browser.tabs.create({ url: url.href, active: message.foreground });
+      await browser.storage.session.set({ [renewalTabKey(tab.id)]: { opener: sender.tab.id, foreground: message.foreground, openedAt: Date.now() } });
       return tab.id;
     }
     case 'close-tab':
-      return closeRenewalTab(message.tabId);
-    case 'close-this-tab':
-      return closeRenewalTab(sender.tab.id);
+      return closeRenewalTab(message.tabId ?? sender.tab.id);
     case 'account-missing': {
       const key = renewalTabKey(sender.tab.id);
       const tab = (await browser.storage.session.get(key))[key];
@@ -65,7 +63,5 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       await browser.tabs.sendMessage(tab.opener, { type: 'renewal-failed', reason: message.reason }).catch(() => {});
       return closeRenewalTab(sender.tab.id);
     }
-    default:
-      throw new Error(`unknown message ${message.type}`);
   }
 });

@@ -1,5 +1,6 @@
 const NAMESPACE = 'github-sso-keeper';
 const INSTANCE_ID = Math.random().toString(36).slice(2, 8);
+const RENEWAL_OWNER = `${INSTANCE_ID}:renewal`;
 
 const FORM = 'form[action*="/oidc/initiate"]';
 const PROMPT_FORM = `${FORM}:not(.sso-prompt-default *)`;
@@ -43,7 +44,6 @@ let lastActivityWrite = 0;
 let renewalHandled = false;
 
 function log(message) {
-  console.info(`[${NAMESPACE}]`, message);
   const entries = shared.get('log', []);
   entries.push([Date.now(), INSTANCE_ID, location.pathname + location.hash, message]);
   shared.set('log', entries.slice(-LOG_LIMIT));
@@ -87,14 +87,14 @@ async function exclusively(task) {
   }
 }
 
-function openTab(url, active) {
-  const tabId = browser.runtime.sendMessage({ type: 'open-tab', url, active });
+function openTab(url, foreground) {
+  const tabId = browser.runtime.sendMessage({ type: 'open-tab', url, foreground });
   return { close: () => tabId.then((id) => browser.runtime.sendMessage({ type: 'close-tab', tabId: id })) };
 }
 
 function fail(reason) {
   log(`renewal failed: ${reason}`);
-  shared.set('last-error', { time: Date.now(), message: reason });
+  shared.set('last-error', reason);
   shared.set('retry-at', Date.now() + RETRY_AFTER_FAILURE_MS);
   return null;
 }
@@ -109,7 +109,6 @@ function describeTimeout(startedAt, opened) {
 // So a background tab submits the SSO form of the tiny page /sso_modal, and the landing page /sso_complete proves the renewal.
 async function renewSession({ foreground = false } = {}) {
   const timeout = foreground ? FOREGROUND_RENEWAL_TIMEOUT_MS : RENEWAL_TIMEOUT_MS;
-  const owner = `${INSTANCE_ID}:renewal`;
   const startedAt = Date.now();
   let tab = null;
   try {
@@ -121,7 +120,7 @@ async function renewSession({ foreground = false } = {}) {
         log('session renewed');
         return result;
       }
-      if (!tab && (await acquireLock(owner, timeout + 15 * 1000))) {
+      if (!tab && (await acquireLock(RENEWAL_OWNER, timeout + 15 * 1000))) {
         log(`opening the renewal tab (${foreground ? 'foreground' : 'background'})`);
         tab = openTab(knownSession().modalUrl + RENEWAL_HASH, foreground);
       }
@@ -130,7 +129,7 @@ async function renewSession({ foreground = false } = {}) {
     return fail(describeTimeout(startedAt, tab !== null));
   } finally {
     tab?.close();
-    releaseLock(owner);
+    releaseLock(RENEWAL_OWNER);
   }
 }
 
@@ -138,7 +137,7 @@ function renewProactively() {
   const { expires } = knownSession();
   if (busy || !navigator.onLine || !expires || nowSeconds() < expires - RENEW_BEFORE_EXPIRY_S) return;
   if (Date.now() - shared.get('activity', 0) > ACTIVE_WITHIN_MS) return;
-  if (Date.now() < shared.get('retry-at', 0) || lockedByOther(`${INSTANCE_ID}:renewal`)) return;
+  if (Date.now() < shared.get('retry-at', 0) || lockedByOther(RENEWAL_OWNER)) return;
   log('session expires soon, renewing it in a background tab');
   return exclusively(() => renewSession());
 }
@@ -153,7 +152,7 @@ function endRenewal(error, expires = 0) {
   if (!error) shared.set('expires', expires);
   shared.set('renewal-result', { time: Date.now(), expires, error });
   log(error ? `renewal tab failed: ${error}` : `renewal tab landed, new expiry ${expires}`);
-  browser.runtime.sendMessage({ type: 'close-this-tab' });
+  browser.runtime.sendMessage({ type: 'close-tab' });
 }
 
 function stepRenewalTab() {
@@ -224,7 +223,7 @@ function describeSession(nextRenewalMs) {
   const lock = shared.get('lock');
   const error = shared.get('last-error');
   if (busy || (lock?.until > Date.now() && lock.owner.endsWith(':renewal'))) return ['renewing', 'Renewing the session in the background…'];
-  if (error) return ['warning', `The last renewal failed: ${error.message}. Next try at ${clock(shared.get('retry-at', 0))}.`];
+  if (error) return ['warning', `The last renewal failed: ${error}. Next try at ${clock(shared.get('retry-at', 0))}.`];
   if (Date.now() - shared.get('activity', 0) > ACTIVE_WITHIN_MS) return ['warning', 'Auto-renewal is paused until you use GitHub again.'];
   return ['ok', `Auto-renewal is on. Next renewal at ${clock(nextRenewalMs)}.`];
 }

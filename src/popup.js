@@ -1,8 +1,10 @@
 const byId = (id) => document.getElementById(id);
 const NOTE_MS = 1500;
 
-function render(view = { color: '#6e7781', headline: 'No data yet', details: ['Open a GitHub tab.'] }) {
-  document.documentElement.style.setProperty('--state', view.color);
+const NO_DATA = { headline: 'No data yet', details: ['Open a GitHub tab.'] };
+
+function render(view = NO_DATA) {
+  document.documentElement.style.setProperty('--state', view.color ?? '');
   byId('headline').textContent = view.headline;
   byId('details').textContent = view.details.join('\n');
 }
@@ -25,7 +27,8 @@ byId('renew').addEventListener('click', async () => {
 byId('copy-log').addEventListener('click', async () => {
   const { status, view } = await browser.storage.local.get(['status', 'view']);
   const lines = (status?.log ?? []).map(([time, id, path, message]) => `${new Date(time).toLocaleTimeString()} [${id}] ${path} | ${message}`);
-  const text = [`GitHub SSO Keeper ${browser.runtime.getManifest().version}`, view?.headline ?? 'No data yet', ...(view?.details ?? []), '', ...lines].join('\n');
+  const { headline, details } = view ?? NO_DATA;
+  const text = [`GitHub SSO Keeper ${browser.runtime.getManifest().version}`, headline, ...details, '', ...lines].join('\n');
   const copied = await navigator.clipboard.writeText(text).then(() => true, () => false);
   byId('copy-log').classList.toggle('done', copied);
   if (!copied) byId('note').textContent = 'Could not copy the event log.';
