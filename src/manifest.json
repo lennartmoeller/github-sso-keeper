@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitHub SSO Keeper",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A browser extension that keeps your GitHub Enterprise Cloud SSO session alive, built for Microsoft Entra ID OIDC single sign-on.",
   "homepage_url": "https://github.com/lennartmoeller/github-sso-keeper",
   "minimum_chrome_version": "148",
