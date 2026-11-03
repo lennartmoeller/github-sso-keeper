@@ -1,6 +1,6 @@
 # GitHub SSO Keeper
 
-A browser extension for Firefox, Chrome and Edge that keeps your GitHub Enterprise Cloud SSO session alive, built for Microsoft Entra ID OIDC single sign-on.
+A browser extension for Firefox and Chrome that keeps your GitHub Enterprise Cloud SSO session alive, built for Microsoft Entra ID OIDC single sign-on.
 It renews the session in the background and clicks SSO prompts for you, so frequent re-authentication stops interrupting your work.
 
 <img src="./assets/popup.png" alt="The active extension icon in the toolbar with open popup.">
@@ -12,11 +12,12 @@ It renews the session in the background and clicks SSO prompts for you, so frequ
 - Picks your account on Microsoft's "Pick an account" page.
 - Shows the minutes left on the toolbar icon: green when healthy, blue while renewing, yellow when paused or failed, red when expired.
 
-## Requirements
+## Install
 
-- Firefox 140 or newer
-- Chrome 148 or newer
-- Edge 148 or newer
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/github-sso-keeper/), version 140 or newer
+- [Chrome](https://chromewebstore.google.com/detail/github-sso-keeper/dfjekelphnagkdgkcoijjchfheafjofj), version 148 or newer
+
+Pin the toolbar icon to keep the minutes left in view.
 
 ## Choose the Microsoft account
 
