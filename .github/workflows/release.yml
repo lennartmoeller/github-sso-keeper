@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - src/**
 
 permissions: {}
 
@@ -171,4 +173,11 @@ jobs:
           FIREFOX_EXTENSION_ID: ${{ vars.FIREFOX_EXTENSION_ID }}
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
-        run: npx --no-install publish-extension "--$STORE-zip" github-sso-keeper.zip
+        run: |
+          set -euo pipefail
+          log="$(mktemp)"
+          if ! npx --no-install publish-extension "--$STORE-zip" github-sso-keeper.zip 2>&1 | tee "$log"; then
+            # The Chrome Web Store rejects uploads while the previous version is in review; the next release carries this change.
+            grep -q NOT_UPDATEABLE "$log" || exit 1
+            echo "::warning::Skipped the $STORE upload because the previous version is still in review."
+          fi
