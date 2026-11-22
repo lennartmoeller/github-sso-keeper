@@ -33,3 +33,7 @@ It renews the session in the background and clicks SSO prompts for you, so frequ
 
 Renewal needs an open GitHub tab and pauses after 45 minutes without activity.
 The next GitHub page then shows the SSO prompt once, which the extension continues.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) to set up, check and release a change.
