@@ -1,18 +1,19 @@
 # Contributing
 
-## Local setup
+## Setup
 
-1. Install [mise](https://mise.jdx.dev/getting-started.html).
-2. Run `mise trust` and `mise install` in the repository root to install every tool in the version [`mise.toml`](./mise.toml) pins.
+Install [mise](https://mise.jdx.dev/getting-started.html), then run `mise trust` and `mise install`.
 
-## Try a change
+## Run locally
 
-Run `npm start` to load the extension from [`src/`](./src/) into a temporary Firefox profile.
+Run `npm start` to load the extension into a temporary Firefox profile.
 
-## Check a change
+## Check
 
-Run `mise run check`, the quality gate that CI runs as the required `Quality` check on every pull request.
+Run `mise run check`, which CI runs as the `Quality` check on every pull request.
 
 ## Release
 
-A manual run of the `Release` workflow on `main` runs [`release-from-conventional-commits`](https://github.com/lennartmoeller/release-from-conventional-commits) action to release a new version.
+Title pull requests as [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), whose types set the [next version](https://github.com/lennartmoeller/release-from-conventional-commits#how-the-version-is-calculated).
+Run the `Release` workflow on `main` to release it.
+A release also submits the extension to the Chrome Web Store and addons.mozilla.org.
