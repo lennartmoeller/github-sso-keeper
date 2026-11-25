@@ -10,7 +10,9 @@
       "id": "github-sso-keeper@lennartmoeller.github.io",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     },
     "gecko_android": {
@@ -23,7 +25,10 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
-  "permissions": ["storage", "alarms"],
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
   "host_permissions": [
     "https://github.com/*",
     "https://login.microsoftonline.com/*/oauth2/v2.0/authorize*"
@@ -37,23 +42,37 @@
   },
   "background": {
     "service_worker": "background.js",
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["https://github.com/*"],
-      "js": ["github.js"],
+      "matches": [
+        "https://github.com/*"
+      ],
+      "js": [
+        "github.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["https://github.com/*"],
-      "js": ["page.js"],
+      "matches": [
+        "https://github.com/*"
+      ],
+      "js": [
+        "page.js"
+      ],
       "run_at": "document_start",
       "world": "MAIN"
     },
     {
-      "matches": ["https://login.microsoftonline.com/*/oauth2/v2.0/authorize*"],
-      "js": ["entra.js"],
+      "matches": [
+        "https://login.microsoftonline.com/*/oauth2/v2.0/authorize*"
+      ],
+      "js": [
+        "entra.js"
+      ],
       "run_at": "document_start"
     }
   ]

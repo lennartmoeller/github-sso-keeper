@@ -1,14 +1,15 @@
 # Release
 
-How a merge to main reaches the browser stores, and what the stores impose.
+How a manual release reaches the browser stores, and what the stores impose.
 
 ## Every release submits the extension to both stores
 
 **Id:** ad902de2-b68f-4003-ad57-52541106c6b2
 **Type:** decision
-**Status:** active
+**Status:** superseded
 **Evidence:** confirmed
 **Source:** conversation 2026-11-22
+**Superseded by:** 9435d158-63d0-45f7-87aa-d543dff24767
 
 Every merge to `main` releases, and each release builds the extension once and submits that zip to the Chrome Web Store and addons.mozilla.org, besides attaching it to the GitHub release.
 
@@ -45,3 +46,18 @@ The releases and tags `v0.2.0` to `v0.2.5` were deleted on 2026-11-22, and the n
 **Rejected alternative:** A patch release 0.1.3, which the stores would refuse.
 
 **Rejected alternative:** A minor release 0.2.0, whose tag name can never be used again.
+
+## Every manual release submits the extension to both stores
+
+**Id:** 9435d158-63d0-45f7-87aa-d543dff24767
+**Type:** decision
+**Status:** active
+**Evidence:** confirmed
+**Source:** conversation 2026-11-25
+**See:** https://github.com/lennartmoeller/github-setup — a180fc35-41ed-43cb-bfe3-820678cb6018 — as of 2026-11-25
+
+Each manual run of the `Release` workflow that releases a version builds the extension once and submits that zip to the Chrome Web Store and addons.mozilla.org, besides attaching it to the GitHub release.
+
+**Reason:** The stores are how users get the extension, and every repository of the maintainer releases only on a manual run, so a store submission happens only when the maintainer starts one.
+
+**Consequence:** Merged pull requests, automerged dependency updates included, wait on `main` until the next manual release, and each store listing must exist before the first upload, because the publishing CLI only submits new versions.
