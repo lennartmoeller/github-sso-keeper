@@ -15,5 +15,4 @@ Run `mise run check`, the quality gate that CI runs as the required `Quality` ch
 
 ## Release
 
-Every merge to `main` releases a new version, computed by [`next-version`](https://github.com/lennartmoeller/next-version) from the pull request title in [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) form: `!` before the colon bumps the major version, `feat` the minor version, and every other type the patch version.
-The release writes that version into [`src/manifest.json`](./src/manifest.json) and submits the extension to the Chrome Web Store and addons.mozilla.org.
+A manual run of the `Release` workflow on `main` runs [`release-from-conventional-commits`](https://github.com/lennartmoeller/release-from-conventional-commits) action to release a new version.
